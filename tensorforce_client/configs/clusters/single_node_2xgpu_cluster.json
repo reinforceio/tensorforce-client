@@ -1,0 +1,10 @@
+{
+  "name": "single_node_2xgpu_cluster",
+  "num_nodes": 1,
+  "disk_size": 200,
+  "cpus_per_node": 8,
+  "gpus_per_node": 2,
+  "gpu_type": "nvidia-tesla-k80",
+  "memory_per_node": 32,
+  "location": "europe-west1-d"
+}

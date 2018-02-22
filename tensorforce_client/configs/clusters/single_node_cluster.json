@@ -1,0 +1,10 @@
+{
+  "name": "single_node_cluster",
+  "num_nodes": 1,
+  "disk_size": 200,
+  "cpus_per_node": 4,
+  "gpus_per_node": 0,
+  "gpu_type": null,
+  "memory_per_node": 16,
+  "location": "europe-west1-d"
+}

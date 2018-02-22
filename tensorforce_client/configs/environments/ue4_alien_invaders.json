@@ -1,0 +1,5 @@
+{
+    "type": "tensorforce.contrib.unreal_engine.UE4Environment",
+    "remote": true,
+    "image": "ducandu/ue4_alien_invaders"
+}

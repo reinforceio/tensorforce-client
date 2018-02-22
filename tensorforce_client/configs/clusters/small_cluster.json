@@ -1,0 +1,6 @@
+{
+  "name": "small_cluster",
+  "num_nodes": 3,
+  "disk_size": 10,
+  "machine_type": "n1-standard-1"
+}

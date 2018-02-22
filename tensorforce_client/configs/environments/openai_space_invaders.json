@@ -1,0 +1,4 @@
+{
+    "type": "tensorforce.contrib.openai_gym.OpenAIGym",
+    "gym_id": "SpaceInvaders-v0"
+}

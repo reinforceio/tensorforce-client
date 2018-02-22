@@ -1,0 +1,23 @@
+{
+  "type": "experiment",
+  "name": "simple_a3c",
+  "description": "Simple A3C Example Experiment on an openAI gym Environment (Space Invaders)",
+  "environment": {
+    "type": "tensorforce.contrib.openai_gym.OpenAIGym",
+    "gym_id": "SpaceInvaders-v0"
+  },
+  "agent": "dqn_visual.json",
+  "network": "configs/networks/cnn_dqn_network.json",
+  "repeat_actions": 4,
+  "episodes": 1000,
+  "timesteps": 1000000,
+  "max_timesteps_per_episode": 1000,
+  "deterministic": false,
+  "run_mode": "distributed",
+  "num_workers": 3,
+  "num_parameter_servers": 1,
+  "cluster": "small_cluster.json",
+  "debug_logging": true,
+  "saver_frequency": 600,
+  "summary_frequency": 600
+}

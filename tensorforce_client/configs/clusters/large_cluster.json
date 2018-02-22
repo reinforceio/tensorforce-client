@@ -1,0 +1,6 @@
+{
+  "name": "large_cluster",
+  "num_nodes": 5,
+  "disk_size": 200,
+  "machine_type": "n1-standard-1"
+}

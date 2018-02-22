@@ -1,0 +1,165 @@
+{%- set name = name|default("") -%}
+{%- set image = image|default("ducandu/tfcli_experiment:latest") -%}
+{%- set image_remote_env = image_remote_env|default(False) -%}
+{%- set experiment_spec = experiment_spec|default(False) -%}
+{%- set run_mode = run_mode|default("single") -%}
+{%- set num_workers = num_workers|default(2) -%}
+{%- set num_parameter_servers = num_parameter_servers|default(1) -%}
+{%- set script = script|default("experiment.py") -%}
+{%- set saver_root_dir = saver_root_dir|default("/experiment") -%}
+{%- set summary_root_dir = summary_root_dir|default("/experiment") -%}
+{%- set demo_worker = demo_worker|default(False) -%}
+{%- set credential_secret_name = "" -%}
+{%- set credential_secret_key = "" -%}
+{%- set port = port|default(5000) -%}
+{%- set debug_logging = debug_logging|default(False) -%}
+{%- set gpus_per_container = gpus_per_container|default(0) -%}
+{%- set repeat_actions = repeat_actions|default(1) -%}
+
+{%- set replicas = {"worker": num_workers} -%}
+{%- if demo_worker -%}
+    {% set _dummy = replicas.update({"worker": num_workers - 1, "demoworker": 1}) %}
+{%- endif -%}
+{%- if run_mode == "distributed" -%}
+    {% set _dummy = replicas.update({"ps": num_parameter_servers}) %}
+{%- endif -%}
+
+{%- macro worker_hosts() -%}
+  {%- for i in range(num_workers) -%}
+    {%- if not loop.first -%},{%- endif -%}
+    {{ name }}-worker-{{ i }}:{{ port }}
+  {%- endfor -%}
+{%- endmacro -%}
+
+{%- macro ps_hosts() -%}
+  {%- for i in range(num_parameter_servers) -%}
+    {%- if not loop.first -%},{%- endif -%}
+    {{ name }}-ps-{{ i }}:{{ port }}
+  {%- endfor -%}
+{%- endmacro -%}
+
+{%- for job in replicas.keys() -%}
+
+{%- if run_mode == "distributed" -%}
+    {%- set num_tasks = replicas[job] -%}
+{% else %}
+    {%- set num_tasks = 1 -%}
+{% endif %}
+
+{%- for task in range(num_tasks) -%}
+{%- if run_mode == "distributed" -%}
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ name }}-{{ job }}-{{ task }}
+spec:
+  selector:
+    name: {{ name }}
+    job: {{ job }}
+    task: "{{ task }}"
+  ports:
+  - port: {{ port }}
+---
+{%- endif -%}
+# kind: ReplicaSet
+# apiVersion: extensions/v1beta1
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ name }}-{{ job }}-{{ task }}
+spec:
+#  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: {{ name }}
+        job: {{ job }}
+        task: "{{ task }}"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: tensorforce
+        image: {{ image }}
+        imagePullPolicy: Always
+{% if gpus_per_container > 0 %}
+        resources:
+          limits:
+            nvidia.com/gpu: {{ gpus_per_container }}  # requesting {{ gpus_per_container }} GPU
+{% endif %}
+{% if credential_secret_name != "" %}
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: "/etc/credential/{{ credential_secret_key }}"
+{% endif %}
+{% if run_mode == "distributed" %}
+        ports:
+        - containerPort: {{ port }}
+{% endif %}
+{% if job == "tensorboard" %}
+        command:
+        - "tensorboard"
+        args:
+        - "--logdir={{ summary_dir }}"
+{% else %}
+        command:
+        - "/usr/bin/python"
+        - "{{ script }}"
+        args:
+        {% if job == "worker" %}- "--saver-dir={{ saver_root_dir }}/{% if run_mode == "distributed" %}{{ job }}-{{ task
+        }}{% else %}results{% endif %}"{% endif %}
+        {% if job == "worker" %}- "--summary-dir={{ summary_root_dir }}/{% if run_mode == "distributed" %}{{ job }}-{{
+        task }}{% else %}results{% endif %}"{% endif %}
+        {% if run_mode == "distributed" %}- "--job={{ job }}"{% endif %}
+        {% if run_mode == "distributed" %}- "--task-index={{ task }}"{% endif %}
+        {% if run_mode == "distributed" %}- "--worker-hosts={{ worker_hosts() }}"{% endif %}
+        {% if run_mode == "distributed" %}- "--ps-hosts={{ ps_hosts() }}"{% endif %}
+        {% if experiment_spec %}- "--experiment-spec={{ experiment_spec }}"{% endif %}
+        - "--repeat-actions={{ repeat_actions }}"
+        {% if debug_logging %}- "--debug"{% endif %}
+{% endif %}
+        volumeMounts:
+        - name: experiment
+          mountPath: /experiment
+{% if credential_secret_name != "" %}
+        - name: credential
+          mountPath: /etc/credential
+          readOnly: true
+{% endif %}
+
+{% if image_remote_env %}
+{# if multi-threaded, create one remote-env per worker, increasing ports from 6025 up #}
+{% if run_mode == "multi-threaded" -%}
+{% for remote_env in range(num_workers if not demo_worker else num_workers - 1) %}
+      - name: remote-env-{{ remote_env }}
+        image: {{ image_remote_env }}
+        imagePullPolicy: Always
+        # set env var to add some number to the listen port
+        env:
+        - name: MARLENE_PORT_ADD
+          value: "{{ remote_env }}"
+{% endfor %}
+{% else %}
+      - name: remote-env
+        image: {{ image_remote_env }}
+        imagePullPolicy: Always
+{% endif %}
+{% endif %}
+
+      volumes:
+      - name: experiment
+        hostPath:
+          # directory location on host node
+          path: /mnt/stateful_partition/experiment
+        # This GCE PD is the one of the first node of the generated k8s cluster
+        #gcePersistentDisk:
+        #  pdName: {{ primary_disk_name }}
+        #  fsType: ext4
+
+{% if credential_secret_name != "" %}
+      - name: credential
+        secret:
+          secretName: {{ credential_secret_name }}
+{% endif %}
+---
+{% endfor %}
+{%- endfor -%}
