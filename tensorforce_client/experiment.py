@@ -120,16 +120,17 @@ class Experiment(object):
         # status (running, paused, stopped, etc..)
         self.status = kwargs.get("status") or from_json.get("status", None)
 
+        # json file specific to a certain experiment 'run' (e.g. cluster may differ from experiment's base config)
+        self.running_json_file = ".experiment_running.json"
+
+    def generate_locally(self):
         # check whether this experiment already exists (as a folder inside project's folder)
         # print("+ Creating experiment's directory {}.".format(self.path))
         # create a new dir for this experiment
         if not os.path.exists(self.path+"results/"):
             os.makedirs(self.path+"results/")
         # write experiment data into experiment file (for future fast constructs of experiment parameters)
-        self.write_json_file()
-
-        # json file specific to a certain experiment 'run' (e.g. cluster may differ from experiment's base config)
-        self.running_json_file = ".experiment_running.json"
+        self.write_json_file(self.path + "experiment.json")
 
     def setup_cluster(self, cluster, project_id, start=False):
         clusters = util.get_cluster_specs()

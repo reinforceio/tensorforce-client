@@ -15,10 +15,18 @@
 
 """
 This script will run along the tensorflow/tensorforce libs in a Docker container in a cluster.
-The docker container(s) will be managed by Kubernetes. Depending on the Docker CMD command line parameters,
-the script will build either a 'ps' task or a 'worker' task.
+The docker container(s) will be managed by Kubernetes.
+Depending on the run_mode of the experiment, this script will either:
+1) `single`: Run in a single k8s Pod
+2) `multi-threaded`: Run in a single Pod, but with many parallel environments and agents and one single
+    central model.
+3) `distributed`: Run in num_workers + num_ps Pods, where each Pod covers one tf task (either 'worker' or
+    parameter-server (ps)).
 
-TODO: implement multi-threaded Runner experiment (to be run on single node with many CPUs).
+Also, if the environment is remote=true in its json specification, the environment runs in a separate container
+(but in the same Pod) as the agent/model. In that case, the env communicates with the agent
+via a tcp protocol (tensorforce RemoteEnvironment).
+
 """
 
 from __future__ import absolute_import

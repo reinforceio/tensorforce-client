@@ -141,7 +141,12 @@ def get_cluster_specs():
     """
     clusters = {}
     out = syscall("gcloud container clusters list --format json", return_outputs=True)
-    json_out = json.load(out)
+    try:
+        json_out = json.load(out)
+    except json.decoder.JSONDecodeError as e:
+        # raise as TFCli Error
+        print("ERROR: Could not load cluster list from cloud!")
+        raise e
 
     if not isinstance(json_out, list):
         raise TFCliError("ERROR: List of clusters is not a json-list!")
