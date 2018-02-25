@@ -120,11 +120,14 @@ def cmd_init(args):
 def cmd_experiment_new(args, project_id=None):
     # check for experiment already existing
     experiments = get_local_experiments()
-    if args.name in experiments:
-        raise util.TFCliError("ERROR: An experiment with the name {} already exists in this project!".
-                              format(args.name))
     # setup the Experiment object
     experiment = Experiment(**args.__dict__)
+    if experiment.name in experiments:
+        raise util.TFCliError("ERROR: An experiment with the name {} already exists in this project!".
+                              format(experiment.name))
+    # write experiment files to local disk
+    experiment.generate_locally()
+    # and start the experiment?
     if args.start:
         if not project_id:
             raise util.TFCliError("ERROR: Cannot start experiment without remote project ID!")
