@@ -1,6 +1,21 @@
+# Copyright 2018 reinforce.io. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
+
 """
 TensorForce client for executing parallelized RL-jobs in the cloud
-using an ecosystem (e.g. Spark) and a cloud computing provider (e.g. AWS)
+using the Kubernetes ecosystem and a cloud computing provider (only google cloud supported so far)
 """
 
 
@@ -8,6 +23,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
 import argparse
 import tensorforce_client.utils as util
 import tensorforce_client.commands as commands
@@ -112,6 +128,7 @@ def main():
     if not args.command:
         print("USAGE ERROR: You have to provide a command after `tfcli`: E.g.: `tfcli experiment --help`")
         parser.print_help()
+        quit()
 
     # help
     if args.command == "help":
@@ -122,7 +139,12 @@ def main():
         # sets up a new experiment (only local for now (until experiment is started))
     else:
         # look for our base parent project directory (we may be in some sub dir) and set the cwd to that parent dir
-        util.set_project_dir()
+        if not util.set_project_dir():
+            print("ERROR: No tensorforce-client project directory found in any parent dir of the "
+                             "current one ({})! Please make sure you are in some project directory. Create a new "
+                             "project with `tfcli init`.".format(os.getcwd()))
+            parser.print_help()
+            quit()
 
         # experiment command
         if args.command == "experiment":
@@ -160,6 +182,8 @@ def main():
             else:
                 print("USAGE ERROR: Invalid sub-command ({}) for command 'cluster'. "
                       "Allowed are [create|delete|list].".format(args.sub_command))
+                parser.print_help()
+
 
 def get_remote_project_id():
     project_spec = util.read_json_spec(file=".tensorforce.json")

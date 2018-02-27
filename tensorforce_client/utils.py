@@ -1,4 +1,4 @@
-# Copyright 2017 reinforce.io. All Rights Reserved.
+# Copyright 2018 reinforce.io. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,11 +44,9 @@ def set_project_dir():
         if os.path.isfile(path + ".tensorforce.json"):
             if path != "":
                 os.chdir(path)
-            return
+            return path
         elif path != "" and not os.path.isdir(path):
-            raise TFCliError("ERROR: No tensorforce-client project directory found in any parent dir of the "
-                             "current one ({})! Please make sure you are in some project directory. Create a new "
-                             "project with `tfcli init`.".format(os.getcwd()))
+            return False
         path += "../"
 
 

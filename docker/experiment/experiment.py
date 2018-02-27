@@ -1,4 +1,4 @@
-# Copyright 2017 reinforce.io. All Rights Reserved.
+# Copyright 2018 reinforce.io. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -175,7 +175,7 @@ def main():
                 # create a tensorboard summary every n sec/steps
                 steps=summary_freq if summary_freq_unit == "t" else None,
                 seconds=summary_freq if summary_freq_unit == "s" else None,
-                labels=("variables", "losses", "states", "actions", "rewards"),  # 'regularization' missing
+                labels=[]  # "states", "actions", "losses", "rewards", "variables"
             ) if args.summary_dir else None
         )
     )

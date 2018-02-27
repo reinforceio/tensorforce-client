@@ -1,4 +1,4 @@
-# Copyright 2017 reinforce.io. All Rights Reserved.
+# Copyright 2018 reinforce.io. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -121,7 +121,7 @@ class Experiment(object):
         self.status = kwargs.get("status") or from_json.get("status", None)
 
         # json file specific to a certain experiment 'run' (e.g. cluster may differ from experiment's base config)
-        self.running_json_file = ".experiment_running.json"
+        self.running_json_file = "experiment_running.json"
 
     def generate_locally(self):
         # check whether this experiment already exists (as a folder inside project's folder)
@@ -208,7 +208,8 @@ class Experiment(object):
                              "sudo mkdir /mnt/stateful_partition/experiment/ ; "  # create experiment dir
                              "sudo chmod -R 0777 /mnt/stateful_partition/experiment/",  # make writable
                              # copy experiment's json file into new dir
-                             [self.path+self.running_json_file, "_NODE_:/mnt/stateful_partition/experiment/."])
+                             [self.path+self.running_json_file, "_NODE_:/mnt/stateful_partition/experiment/."],
+                             silent=False)
 
         # Create kubernetes services (which will start the experiment).
         print("+ Creating new Kubernetes Services and ReplicaSets.")
@@ -268,7 +269,7 @@ def get_experiment_from_string(experiment, running=False):
         The found Experiment object.
     """
     file = "experiments/{}/{}.json". \
-        format(experiment, "experiment" if not running else ".experiment_running")
+        format(experiment, "experiment" if not running else "experiment_running")
     if not os.path.exists(file):
         if running:
             raise util.TFCliError("ERROR: Experiment {} does not seem to be running right now! You have to create, then"

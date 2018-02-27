@@ -1,14 +1,17 @@
-"""
- -------------------------------------------------------------------------
- tensorforce-client - 
- commands.py
- 
- !!TODO: add file description here!! 
-  
- created: 2018/01/26 in PyCharm
- (c) 2017 Sven - ducandu GmbH
- -------------------------------------------------------------------------
-"""
+# Copyright 2018 reinforce.io. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
 
 from tensorforce_client.utils import syscall
 import tensorforce_client.utils as util
@@ -68,8 +71,6 @@ def cmd_init(args):
     syscall("gcloud auth activate-service-account kubernetes-account@introkubernetes-191608.iam.gserviceaccount.com "
             "--key-file=l:/programming/privatekeys/MaRLEnE-bbad55cddab1.json")
 
-    remote_project_id = None
-    remote_project_name = None
     remote_projects_by_name, remote_projects_by_id = util.get_remote_projects()
     # if remote given -> only check for that one and exit if doesn't exist
     if args.remote_project_id:
@@ -123,8 +124,9 @@ def cmd_experiment_new(args, project_id=None):
     # setup the Experiment object
     experiment = Experiment(**args.__dict__)
     if experiment.name in experiments:
-        raise util.TFCliError("ERROR: An experiment with the name {} already exists in this project!".
-                              format(experiment.name))
+        print("ERROR: An experiment with the name {} already exists in this project! "
+              "Use `experiment start` to start it.".format(experiment.name))
+        return
     # write experiment files to local disk
     experiment.generate_locally()
     # and start the experiment?
@@ -150,7 +152,6 @@ def cmd_experiment_list():
                      e.run_mode, e.num_workers, e.cluster.get("name"), e.status))
 
 
-
 def cmd_experiment_start(args, project_id):
     print("+ Loading experiment settings{}.".format(" (from running experiment)" if args.resume else ""))
     experiment = get_experiment_from_string(args.experiment, running=args.resume)
@@ -172,7 +173,7 @@ def cmd_experiment_stop(args):
 
 def cmd_experiment_download(args):
     print("+ Loading experiment settings.")
-    experiment = get_experiment_from_string(args.experiment)
+    experiment = get_experiment_from_string(args.experiment, running=True)
     print("+ Downloading experiment's results ...")
     experiment.download()
 
