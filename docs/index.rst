@@ -2,11 +2,14 @@ TensorForce-Client - Running Parallelized Reinforcement Learning Experiments in 
 =========================================================================================
 
 TensorForce-Client is an easy to use command line interface to the open source
-reinforcement learning (RL) library TensorForce. This client helps you to setup
-and run your own RL experiments in the cloud (only google supported so far),
+reinforcement learning (RL) library "TensorForce". This client helps you to setup
+and run your own RL experiments in the cloud (only google cloud supported so far),
 utilizing GPUs, multi-parallel execution algorithms, and TensorForce's support for
-a large variety of environments ranging from simple gridworlds to Atari games and
+a large variety of environments ranging from simple grid-worlds to Atari games and
 Unreal Engine 4 games.
+Tensorforce-client submits RL-jobs using Kubernetes and docker containers in a fully automated fashion.
+To read more about the internal workings of the client, check out `this chapter here
+<tensorforce_client/tensorforce_client.internals.html>`_.
 
 
 .. toctree::
@@ -14,6 +17,8 @@ Unreal Engine 4 games.
    :caption: Contents:
 
    tensorforce_client/tensorforce_client.installation
+   tensorforce_client/tensorforce_client.usage
+   tensorforce_client/tensorforce_client.internals
    tensorforce_client/tensorforce_client.reference
 
 

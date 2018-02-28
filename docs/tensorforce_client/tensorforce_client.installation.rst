@@ -59,9 +59,11 @@ already be enabled by default):
 Get the Google Cloud SDK (all platforms)
 ----------------------------------------
 
+Go to the following URL and download the google SDK executable for your platform:
+
 https://cloud.google.com/sdk/docs/quickstarts
 
-Run the .exe and follow the installation instructions.
+Run the executable and follow the installation instructions.
 
 Make sure you enable beta commands during installation as sometimes
 the tensorforce-client will rely on those.

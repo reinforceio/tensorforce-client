@@ -19,6 +19,14 @@ The tensorforce\_client Package Reference
 Submodules
 ----------
 
+Tensorforce-client only has two major submodules, which are `Experiment <tensorforce_client.experiment.html>`_
+and `Cluster <tensorforce_client.cluster.html>`_.
+Currently - as all interaction with the client happens from the command line - you won't need to know
+the details of those two classes.
+We may add support for python scripting against this client library in the future so you will be able to
+automate your experiments and cluster creation/deletion tasks.
+
+
 Experiments: (tensorforce\_client\.experiment)
 ++++++++++++++++++++++++++++++++++++++++++++++
 

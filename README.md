@@ -16,6 +16,12 @@ Tensorforce-client already comes with many pre-defined configs that
 can be used out of the box.
 - Start your own reinforcement learning experiments on the generated
 clusters via simple command lines in your favourite local shell.
+- Tensorforce-client supports three different *run-modes* so far:
+`single`, `multi-threaded`, and `distributed`.
+See our [tensorforce-client usage](<http://tensorforce-client.readthedocs.io/en/latest/tensorforce_client/tensorforce_client.usage.html>)
+and
+[tensorforce-client internals](<http://tensorforce-client.readthedocs.io/en/latest/tensorforce_client/tensorforce_client.internals.html>)
+documentation for more information on the different *run-modes*.
 - Watch the progress of your experiments by following basic stats
 (e.g. average reward per episode) or via occasional tensorboard
 downloads.

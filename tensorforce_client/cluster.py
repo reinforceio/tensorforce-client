@@ -24,16 +24,32 @@ import tensorforce_client.utils as util
 
 
 class Cluster(object):
-    """
-    A cloud cluster object specifying things like:
-    - number of nodes
-    - GPUs per node and GPU type
-    - memory per node
-    - disk size
-    - zone
-    - etc..
-    """
+
     def __init__(self, **kwargs):
+        """
+        A cloud cluster object specifying things like: number of nodes, GPUs per node and GPU type, memory per node,
+        disk size, zone, etc..
+
+        Args:
+            kwargs (any):
+                file (str): The filename of a cluster spec json file to use. Single settings in this file
+                    can be overwritten by specifying these in further kwargs to this c'tor.
+                name (str): The name of the cluster.
+                machine_type (str): The machine type to use for all nodes in the cluster. Machine types can
+                    either be gcloud-accepted strings such as everything listed in `gcloud compute machine-types list`
+                    or custom strings that conform to these rules:
+                    https://cloud.google.com/compute/docs/instances/creating-instance-with-custom-machine-type.
+                    When the kwargs `cpus_per_node` and `memory_per_node` are given,
+                    tensorforce-client will automatically create the correct machine-type.
+                cpus_per_node (int): The number of vCPUs per node.
+                gpus_per_node (int): The number of (physical) GPUs per node.
+                gpu_type (str): The GPU type to use. Supported are only 'nvidia-tesla-k80' and 'nvidia-tesla-p100'.
+                memory_per_node (int): The memory (in Gb) per node.
+                num_nodes (int): The number of nodes for the cluster.
+                disk_size (int): The amount of disk space per node in Gb.
+                location (str): The location of the cluster. Default us the gcloud/project set default zone.
+        """
+
         self.file = kwargs.get("file")
         if self.file:
             from_json = util.read_json_spec(self.file, "clusters")
