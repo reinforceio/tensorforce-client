@@ -41,26 +41,26 @@ billing enabled and certain "google cloud APIs" activated.
 
 ### Usage and Examples
 
-Checkout the tensorforce-client documentation in order to
+Checkout the [tensorforce-client documentation](http://tensorforce-client.readthedocs.io/en/latest/) in order to
 learn how to run your own reinforcement learning
 experiments in the cloud. To get quick help on the command line
 for certain commands and subcommands, simply use the `--help` flag
 like so:
 
 ```
-$ python -m tensorforce_client --help
+$ tfcli --help
 ```
 
 Or, more specifically:
 
 ```
-$ python -m tensorforce_client cluster --help
+$ tfcli cluster --help
 ```
 
 Or:
 
 ```
-$ python -m tensorforce_client experiment new --help
+$ tfcli experiment new --help
 ```
 
 
@@ -72,7 +72,7 @@ First, create a tensorforce project on your local machine:
 # Create, then cd into a directory of your choice in which you would
 # like to start a new project.
 
-$ python -m tensorforce_client init -r [some remote gcloud project ID e.g. TensorForce-Client]
+$ tfcli init -r [some remote gcloud project ID e.g. TensorForce-Client]
 
 # This will link your already existing cloud project with the current working dir on your local machine.
 # Your project is now initialized.
@@ -87,7 +87,7 @@ Then, start a small cluster in the cloud by using one of the already
 provided json cluster config files:
 
 ```
-$ python -m tensorforce_client cluster create -f small_cluster.json -n my-new-cluster
+$ tfcli cluster create -f small_cluster.json -n my-new-cluster
 ```
 
 This will bring up a new Kubernetes cluster in the cloud, which may take
@@ -96,5 +96,15 @@ first experiment:
 
 #### Creating and starting an experiment
 
+```
+$ tfcli experiment new -f simple_a3c -c my-new-cluster -n my-new-experiment --start
+```
 
+This creates and right away starts (`--start` option) a new experiment using the
+`simple_a3c` specification (which will be discovered automatically from the
+`configs/experiments/simple_a3c.json` file). The cluster that we would like this experiment
+to run on has already been created in the previous step, but you can also link
+a new cluster to the experiment, in which case that cluster would be created upon the experiment's
+start. Also, we are specifying a custom name for the experiment (`my-new-experiment`), instead of
+using the one given in the json config file.
 

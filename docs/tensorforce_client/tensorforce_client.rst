@@ -20,7 +20,7 @@ Submodules
 ----------
 
 tensorforce\_client\.experiment module
---------------------------------------
+++++++++++++++++++++++++++++++++++++++
 
 .. automodule:: tensorforce_client.experiment
     :members:
@@ -29,7 +29,7 @@ tensorforce\_client\.experiment module
     :show-inheritance:
 
 tensorforce\_client\.cluster module
------------------------------------
++++++++++++++++++++++++++++++++++++
 
 .. automodule:: tensorforce_client.cluster
     :members:

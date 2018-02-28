@@ -14,6 +14,7 @@ Unreal Engine 4 games.
    :caption: Contents:
 
    tensorforce_client/tensorforce_client.installation
+   tensorforce_client/tensorforce_client
 
 
 More information

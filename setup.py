@@ -24,6 +24,11 @@ setup(
     license='Apache',
     author='Sven Mika',
     author_email='sven.mika@ducandu.com',
-    description='A client to run experiments in the cloud using the TensorForce reinforcement learning library.'
+    description='A client to run experiments in the cloud using the TensorForce reinforcement learning library.',
+    entry_points={
+        'console_scripts': [
+            'tfcli = tensorforce_client.tfcli:main'
+        ]
+    }
 )
 
