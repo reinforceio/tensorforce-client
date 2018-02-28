@@ -5,6 +5,10 @@ reinforce.io and Kubernetes.
 Neither local GPUs, tensorflow-/tensorforce-, nor Kubernetes
 installations are required!
 
+[![Docs](https://readthedocs.org/projects/tensorforce/badge)](http://tensorforce-client.readthedocs.io/en/latest/)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/reinforceio/tensorforce-client/blob/master/LICENSE)
+
+
 - Create arbitrary and custom clusters (including GPU machines) to
 be able to run parallelized machine learning tasks.
 - Setup your RL experiments using simple json config files.
@@ -15,20 +19,18 @@ clusters via simple command lines in your favourite local shell.
 - Watch the progress of your experiments by following basic stats
 (e.g. average reward per episode) or via occasional tensorboard
 downloads.
-- Pause, stop, resume, download your experiments from your
+- Pause, stop, resume, download your experiments all from your
 local command line.
 - Link clusters to your experiments to shut them down automatically
 once the experiment is done running.
 
-[comment]: <> (Put timers on your clusters in case you forget to shut them down Shut down all clusters when done!)
-
 
 ### Requirements
 
-##### (Installation will be described in detail further below).
+##### (Installations will be described in detail further below).
 
 - A google cloud platform account (any google account will do) with
-billing enabled and a bunch of so-called "google cloud APIs" activated:
+billing enabled and certain "google cloud APIs" activated.
 - The Google Cloud SDK.
 - Local installation of Python3.5 or higher.
 - The tensorforce-client python module (pip-installable).
