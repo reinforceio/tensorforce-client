@@ -1,12 +1,12 @@
+[![Docs](https://readthedocs.org/projects/tensorforce/badge)](http://tensorforce-client.readthedocs.io/en/latest/)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/reinforceio/tensorforce-client/blob/master/LICENSE)
+
 # tensorforce-client
 A local command line client to run reinforcement learning (RL)
 experiments in the google cloud using the TensorForce library by
 reinforce.io and Kubernetes.
 Neither local GPUs, tensorflow-/tensorforce-, nor Kubernetes
 installations are required!
-
-[![Docs](https://readthedocs.org/projects/tensorforce/badge)](http://tensorforce-client.readthedocs.io/en/latest/)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/reinforceio/tensorforce-client/blob/master/LICENSE)
 
 
 - Create arbitrary and custom clusters (including GPU machines) to
