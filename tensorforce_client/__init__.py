@@ -13,7 +13,10 @@
 # limitations under the License.
 # ==============================================================================
 
-import tensorforce_client.tfcli
+"""
+TensorForce client for executing parallelized RL-jobs in the cloud
+using the Kubernetes ecosystem and a cloud computing provider (only google cloud supported so far)
+"""
 
-tensorforce_client.tfcli.main()
+__version__ = "0.1.0"
 

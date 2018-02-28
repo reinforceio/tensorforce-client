@@ -1,5 +1,5 @@
-tensorforce\_client package
-===========================
+The tensorforce\_client Package Reference
+=========================================
 
 .. Subpackages
    -----------
@@ -19,8 +19,8 @@ tensorforce\_client package
 Submodules
 ----------
 
-tensorforce\_client\.experiment module
-++++++++++++++++++++++++++++++++++++++
+Experiments: (tensorforce\_client\.experiment)
+++++++++++++++++++++++++++++++++++++++++++++++
 
 .. automodule:: tensorforce_client.experiment
     :members:
@@ -28,10 +28,19 @@ tensorforce\_client\.experiment module
     :inherited-members:
     :show-inheritance:
 
-tensorforce\_client\.cluster module
-+++++++++++++++++++++++++++++++++++
+Clusters: (tensorforce\_client\.cluster)
+++++++++++++++++++++++++++++++++++++++++
 
 .. automodule:: tensorforce_client.cluster
+    :members:
+    :undoc-members:
+    :inherited-members:
+    :show-inheritance:
+
+
+Command Functions
+-----------------
+.. automodule:: tensorforce_client.commands
     :members:
     :undoc-members:
     :inherited-members:

@@ -13,10 +13,7 @@
 # limitations under the License.
 # ==============================================================================
 
-"""
-TensorForce client for executing parallelized RL-jobs in the cloud
-using the Kubernetes ecosystem and a cloud computing provider (only google cloud supported so far)
-"""
+
 
 
 from __future__ import absolute_import
@@ -27,6 +24,7 @@ import os
 import argparse
 import tensorforce_client.utils as util
 import tensorforce_client.commands as commands
+
 
 
 def main():

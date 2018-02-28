@@ -24,6 +24,15 @@ import tensorforce_client.utils as util
 
 
 class Cluster(object):
+    """
+    A cloud cluster object specifying things like:
+    - number of nodes
+    - GPUs per node and GPU type
+    - memory per node
+    - disk size
+    - zone
+    - etc..
+    """
     def __init__(self, **kwargs):
         self.file = kwargs.get("file")
         if self.file:
@@ -70,8 +79,8 @@ class Cluster(object):
 
     def create(self):
         """
-        Create the Kubernetes cluster with the given options
-        this sets up kubectl to point to the new cluster automatically.
+        Create the Kubernetes cluster with the options given in self.
+        This also sets up the local kubectl app to point to the new cluster automatically.
         """
         print("+ Creating cluster: {}. This may take a few minutes ...".format(self.name_hyphenated))
         if self.num_gpus == 0:
@@ -106,6 +115,9 @@ class Cluster(object):
         print("+ Done. Cluster: {} created.".format(self.name_hyphenated))
 
     def delete(self):
+        """
+        Deletes (shuts down) this cluster in the cloud.
+        """
         # delete the named cluster
         # don't wait for operation to finish
         print("+ Deleting cluster {} (async).".format(self.name_hyphenated))
@@ -115,6 +127,10 @@ class Cluster(object):
         self.deleted = True
 
     def get_spec(self):
+        """
+        Returns: Dict of the important settings of this Cluster.
+        """
+
         return {
             "name": self.name,
             "machine_type": self.machine_type,
@@ -127,26 +143,27 @@ class Cluster(object):
             "location": self.location
         }
 
-    def ssh_parallel(self, *items, silent=True):
+    def ssh_parallel(self, *items, **kwargs):
         """
         Runs commands via ssh and/or scp commands on all nodes in the cluster in parallel using multiple threads.
 
         Args:
-            *items: List of commands to execute. Could be either of type str (ssh command)
+            items (List[Union[str,tuple]]): List of commands to execute. Could be either of type str (ssh command)
                 or a tuple/list of two items (`from` and `to`) for an scp command.
-            silent (bool): Whether to execute all commands silently.
+            kwargs (any):
+                silent (bool): Whether to execute all commands silently (default: True).
         """
         threads = []
         # generate and start all threads
         for node, spec in self.instances.items():
-            t = threading.Thread(target=self.ssh_parallel_target, args=(node, silent, items))
+            t = threading.Thread(target=self.ssh_parallel_target, args=(node, kwargs.get("silent", True), items))
             threads.append(t)
             t.start()
         # wait for all threads to complete
         for t in threads:
             t.join()
 
-    def ssh_parallel_target(self, node, silent, items):
+    def _ssh_parallel_target(self, node, silent, items):
         for item in items:
             # an ssh command to execute on the node
             if isinstance(item, str):

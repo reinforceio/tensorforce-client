@@ -48,19 +48,19 @@ for certain commands and subcommands, simply use the `--help` flag
 like so:
 
 ```
-$ tfcli --help
+$ python -m tensorforce_client --help
 ```
 
 Or, more specifically:
 
 ```
-$ tfcli cluster --help
+$ python -m tensorforce_client cluster --help
 ```
 
 Or:
 
 ```
-$ tfcli experiment new --help
+$ python -m tensorforce_client experiment new --help
 ```
 
 
@@ -72,7 +72,7 @@ First, create a tensorforce project on your local machine:
 # Create, then cd into a directory of your choice in which you would
 # like to start a new project.
 
-$ tfcli init -r [some remote gcloud project ID e.g. TensorForce-Client]
+$ python -m tensorforce_client init -r [some remote gcloud project ID e.g. TensorForce-Client]
 
 # This will link your already existing cloud project with the current working dir on your local machine.
 # Your project is now initialized.
@@ -87,7 +87,7 @@ Then, start a small cluster in the cloud by using one of the already
 provided json cluster config files:
 
 ```
-$ tfcli cluster create -f small_cluster.json -n my-new-cluster
+$ python -m tensorforce_client cluster create -f small_cluster.json -n my-new-cluster
 ```
 
 This will bring up a new Kubernetes cluster in the cloud, which may take
@@ -97,7 +97,7 @@ first experiment:
 #### Creating and starting an experiment
 
 ```
-$ tfcli experiment new -f simple_a3c -c my-new-cluster -n my-new-experiment --start
+$ python -m tensorforce_client experiment new -f simple_a3c -c my-new-cluster -n my-new-experiment --start
 ```
 
 This creates and right away starts (`--start` option) a new experiment using the

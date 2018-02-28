@@ -124,15 +124,36 @@ class Experiment(object):
         self.running_json_file = "experiment_running.json"
 
     def generate_locally(self):
+        """
+        Writes the local json spec file for this Experiment object into the Experiment's dir.
+        This file contains all settings (including agent, network, cluster, run-mode, etc..).
+        """
+
         # check whether this experiment already exists (as a folder inside project's folder)
-        # print("+ Creating experiment's directory {}.".format(self.path))
         # create a new dir for this experiment
         if not os.path.exists(self.path+"results/"):
+            print("+ Creating experiment's directory {}.".format(self.path))
             os.makedirs(self.path+"results/")
         # write experiment data into experiment file (for future fast constructs of experiment parameters)
+        print("+ Writing Experiment's settings to local disk.")
         self.write_json_file(self.path + "experiment.json")
 
     def setup_cluster(self, cluster, project_id, start=False):
+        """
+        Given a cluster name (or None) and a remote project-ID,
+        sets up the cluster settings for this Experiment locally.
+        Also starts the cluster if start is set to True.
+
+        Args:
+            cluster (str): The name of the cluster. If None, will get cluster-spec from the Experiment, or create a
+                default Cluster object.
+            project_id (str): The remote gcloud project ID.
+            start (bool): Whether to already create (start) the cluster in the cloud.
+
+        Returns: The Cluster object.
+
+        """
+
         clusters = util.get_cluster_specs()
 
         # cluster is given (separate from experiment's own cluster)
@@ -178,6 +199,17 @@ class Experiment(object):
         return cluster
 
     def start(self, project_id, resume=False, cluster=None):
+        """
+        Starts the Experiment in the cloud (using kubectl).
+        The respective cluster is started (if it's not already running).
+
+        Args:
+            project_id (str): The remote gcloud project-ID.
+            resume (bool): Whether we are resuming an already started (and paused) experiment.
+            cluster (str): The name of the cluster to use (will be started if not already running). None for
+                using the Experiment's own cluster or - if not given either - a default cluster.
+        """
+
         # Update our cluster spec
         cluster = self.setup_cluster(cluster, project_id, start=False if resume else True)
         # Rewrite our json file.
@@ -216,7 +248,13 @@ class Experiment(object):
         util.syscall("kubectl create -f {}".format(self.k8s_config))
 
     def pause(self, project_id):
-        cluster = self.setup_cluster(cluster=None, project_id=project_id)
+        """
+        Pauses the already running Experiment.
+
+        Args:
+            project_id (str): The remote gcloud project-ID.
+        """
+        _ = self.setup_cluster(cluster=None, project_id=project_id)
         # delete the kubernetes workloads
         print("+ Deleting Kubernetes Workloads.")
         util.syscall("kubectl delete -f {}".format(self.k8s_config))
@@ -227,6 +265,15 @@ class Experiment(object):
         print("+ Experiment is paused. Resume with `experiment start --resume -e {}`.".format(self.name_hyphenated))
 
     def stop(self, no_download=False):
+        """
+        Stops an already running Experiment by deleting the Kubernetes workload. If no_download is set to False
+            (default), will download all results before stopping. If the cluster that the experiment runs on
+            is dedicated to this experiment, will also delete the cluster.
+
+        Args:
+            no_download (bool): Whether to not(!) download the experiment's results so far (default: False).
+        """
+
         # download data before stopping
         if not no_download:
             self.download()
@@ -247,12 +294,21 @@ class Experiment(object):
         self.write_json_file(file=self.path+self.running_json_file)
 
     def download(self):
+        """
+        Downloads the experiment's results (model checkpoints and tensorboard summary files) so far.
+        """
         cluster = get_cluster_from_string(self.cluster.get("name"))
         cluster.ssh_parallel(["_NODE_:/mnt/stateful_partition/experiment/{}*".
                              format("results/" if self.run_mode != "distributed" else ""),
                               self.path+"results/."])
 
     def write_json_file(self, file=None):
+        """
+        Writes all the Experiment's settings to disk as a json file.
+
+        Args:
+            file (str): The filename to use. If None, will use the Experiment's filename.
+        """
         with open(self.file if not file else file, "w") as f:
             json.dump(self.__dict__, f, indent=4)
 
