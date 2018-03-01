@@ -71,7 +71,8 @@ A single Pod is created on one node (you will get a warning if you use this mode
 node) that runs our docker container (the GPU or the CPU version depending on whether your cluster has GPUs).
 The experiment's parameter `num_workers` determines how many parallel environment/agent-pairs are created and run
 each in a separate thread. Independent of the number of environment/agent-pairs (`num_workers`), only a single central
-tensorflow model is created and trained using so-called hogwild updates (`https://arxiv.org/abs/1106.5730`_).
+tensorflow model is created and trained using so-called hogwild updates
+(`see this paper here <https://arxiv.org/abs/1106.5730>`_).
 A reinforcement learning algorithm that utilizes these findings was
 `first published here <https://arxiv.org/abs/1602.01783>`_.
 

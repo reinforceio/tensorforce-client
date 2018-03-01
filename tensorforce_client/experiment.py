@@ -29,19 +29,29 @@ from tensorforce_client.cluster import Cluster, get_cluster_from_string
 class Experiment(object):
     def __init__(self, **kwargs):
         """
-        Args:
-            kwargs (any):
-                file (str): The Experiment's json spec file (can contain all other args).
-                name (str): The name of the Experiment. This is also the name of the folder where it is stored.
-                environment (str): The filename of the json env-spec file to use (see TensorForce documentation).
-                agent (str): The filename of the json agent-spec file to use (see TensorForce documentation).
-                network (str):  The filename of the json network-spec file to use (see TensorForce documentation).
-                episodes (int): The total number of episodes to run (all parallel agents).
-                total_timesteps (int): The max. total number of timesteps to run (all parallel agents).
-                max_timesteps_per_episode (int): The max. number of timesteps to run in each episode.
-                deterministic (bool): Whether to use stochastic exploration on top of plain action outputs.
-                num_workers (int): The number of worker processes to use (see distributed tensorflow).
-                num_parameter_servers (int): The number of parameter servers to use (see distributed tensorflow).
+        Keyword Args:
+            file (str): The Experiment's json spec file (can contain all other args).
+            name (str): The name of the Experiment. This is also the name of the folder where it is stored.
+            environment (str): The filename of the json env-spec file to use (see TensorForce documentation).
+            agent (str): The filename of the json agent-spec file to use (see TensorForce documentation).
+            network (str):  The filename of the json network-spec file to use (see TensorForce documentation).
+            cluster (str): The filename of the json cluster-spec file to use (see class `Cluster`).
+            episodes (int): The total number of episodes to run (all parallel agents).
+            total_timesteps (int): The max. total number of timesteps to run (all parallel agents).
+            max_timesteps_per_episode (int): The max. number of timesteps to run in each episode.
+            deterministic (bool): Whether to not(!) use stochastic exploration on top of plain action outputs.
+            repeat_actions (int): The number of actions to repeat for each action selection (by calling agent.act()).
+            debug_logging (bool): Whether to switch on debug logging (default: False).
+            run_mode (str): Which runner mode to use. Valid values are only 'single', 'multi-threaded' and
+                'distributed'.
+            num_workers (int): The number of worker processes to use (see `distributed` and `multi-threaded`
+                run_modes).
+            num_parameter_servers (int): The number of parameter servers to use (see distributed tensorflow).
+            saver_frequency (str): The frequency with which to save the model. This is a combination of an int
+                and a unit (e.g. "600s"), where unit can be "s" (seconds), "e" (episodes), or "t" (timesteps).
+            summary_frequency (str): The frequency with which to save a tensorboard summary.
+                This is a combination of an int and a unit (e.g. "600s"), where unit can be "s" (seconds)
+                or "t" (timesteps). The episode unit (e) is not allowed here.
         """
         # see whether we have a json (yaml?) file for the experiment
         # TODO: yaml support
@@ -267,8 +277,8 @@ class Experiment(object):
     def stop(self, no_download=False):
         """
         Stops an already running Experiment by deleting the Kubernetes workload. If no_download is set to False
-            (default), will download all results before stopping. If the cluster that the experiment runs on
-            is dedicated to this experiment, will also delete the cluster.
+        (default), will download all results before stopping. If the cluster that the experiment runs on
+        is dedicated to this experiment, will also delete the cluster.
 
         Args:
             no_download (bool): Whether to not(!) download the experiment's results so far (default: False).
