@@ -64,6 +64,9 @@ def main():
     parser.add_argument('--summary-dir', help="The root dir where all tensorboard summary data should go.")
     parser.add_argument('-L', '--load', action="store_true", help="Load model from a previous or paused "
                                                                   "run of this experiment.")
+    # helpers for debugging
+    parser.add_argument('--remote-env-host', default="localhost",
+                        help="The host IP for a possible remote-env connection (instead of localhost).")
 
     args = parser.parse_args()
 
@@ -99,19 +102,22 @@ def main():
     # check for remote env and log it (remote envs are put into a separate container)
     is_remote = environment_spec.pop("remote", False)
 
+    env_kwargs = {}
     if is_remote:
         img = environment_spec.pop("image", "default")
+        env_kwargs.update({"host": args.remote_env_host})
         logger.info("Experiment is run with RemoteEnvironment {} (in separate container).".format(img))
 
     if run_mode != "multi-threaded":
-        environments = [Environment.from_spec(experiment_spec["environment"], {})]
+        environments = [Environment.from_spec(experiment_spec["environment"], env_kwargs)]
     else:
         # For remote-envs in multi-threaded mode, we need to set a sequence of ports as all envs will be running
         # in the same pod. For single mode: Use the default port.
-        environments = [Environment.from_spec(experiment_spec["environment"], {})]
+        environments = [Environment.from_spec(experiment_spec["environment"], env_kwargs)]
         for i in range(1, experiment_spec.get("num_workers", 5)):
-            environments.append(Environment.from_spec(experiment_spec["environment"],
-                                                      {"port": environments[0].port + i} if is_remote else {}))
+            if is_remote:
+                env_kwargs.update({"port": environments[0].port + i})
+            environments.append(Environment.from_spec(experiment_spec["environment"], env_kwargs))
 
     saver_freq = experiment_spec.get("saver_frequency", "600s")
     mo = re.match(r'^(\d+)([ste])?$', str(saver_freq))

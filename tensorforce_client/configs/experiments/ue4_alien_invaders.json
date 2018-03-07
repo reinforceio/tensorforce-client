@@ -5,7 +5,8 @@
   "environment": {
     "type": "tensorforce.contrib.unreal_engine.UE4Environment",
     "remote": true,
-    "image": "ducandu/ue4_alien_invaders:exec"
+    "image": "ducandu/ue4_alien_invaders:exec",
+    "discretize_actions": true
   },
   "agent": "dqn_visual.json",
   "network": "configs/networks/cnn_dqn_network.json",

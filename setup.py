@@ -13,22 +13,33 @@
 # limitations under the License.
 # ==============================================================================
 
-from setuptools import setup
-import os
+from setuptools import setup, find_packages
+from tensorforce_client import __version__ as version
+
 
 setup(
     name='tensorforce-client',
-    version='0.1.0',
-    packages=[''],
-    url='github.com/ducandu/tensorforce-client',
-    license='Apache',
-    author='Sven Mika',
+    version=version,
+    packages=find_packages(exclude=['docs', 'examples', 'docker']),
+    #package_dir={'tensorforce_client': 'tensorforce_client'},
+    package_data={'tensorforce_client': ['configs/*']},
+    url='https://github.com/reinforceio/tensorforce-client',
+    license='Apache 2.0',
+    author='Reinforce.io & ducandu research',
     author_email='sven.mika@ducandu.com',
     description='A client to run experiments in the cloud using the TensorForce reinforcement learning library.',
+    keywords='Reinforcement Learning, Cloud based RL, TensorForce, TensorFlow, Unreal Engine 4, '
+             'Cloud Machine Learning with GPUs',
     entry_points={
         'console_scripts': [
             'tfcli = tensorforce_client.tfcli:main'
         ]
+    },
+    download_url='https://github.com/reinforceio/tensorforce-client/archive/{}.tar.gz'.format(version),
+    install_requires=["jinja2"],
+    #setup_requires=[],
+    extras_require={
+        "tf": ["tensorflow>=1.4.0"]  # if tensorboard needed to look at summaries locally
     }
 )
 

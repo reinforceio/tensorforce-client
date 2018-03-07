@@ -1,5 +1,5 @@
-The tensorforce\_client Package Reference
-=========================================
+Package/Class Reference
+=======================
 
 .. Subpackages
    -----------

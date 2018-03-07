@@ -106,9 +106,9 @@ class Cluster(object):
                                format(self.name_hyphenated, self.machine_type, self.disk_size, self.num_nodes,
                                       "--zone " + self.location if self.location else ""), return_outputs="as_str")
         else:
-            out = util.syscall("gcloud beta container clusters create {} --enable-cloud-logging --enable-cloud-monitoring "
+            out = util.syscall("gcloud container clusters create {} --enable-cloud-logging --enable-cloud-monitoring "
                                "--accelerator type={},count={} {} -m {} --disk-size {} --enable-kubernetes-alpha "
-                               "--image-type COS --num-nodes {} --cluster-version 1.9.2-gke.1 --quiet".
+                               "--image-type UBUNTU --num-nodes {} --cluster-version 1.9.2-gke.1 --quiet".
                                format(self.name_hyphenated, self.gpu_type, self.gpus_per_node,
                                       "--zone "+self.location if self.location else "", self.machine_type, self.disk_size,
                                       self.num_nodes), return_outputs="as_str")
@@ -139,8 +139,8 @@ class Cluster(object):
         # delete the named cluster
         # don't wait for operation to finish
         print("+ Deleting cluster {} (async).".format(self.name_hyphenated))
-        util.syscall("gcloud {} container clusters delete {} --quiet --async".
-                     format("" if self.num_gpus == 0 else "beta", self.name))
+        util.syscall("gcloud container clusters delete {} --quiet --async".
+                     format(self.name))
         self.started = False
         self.deleted = True
 
@@ -174,7 +174,7 @@ class Cluster(object):
         threads = []
         # generate and start all threads
         for node, spec in self.instances.items():
-            t = threading.Thread(target=self.ssh_parallel_target, args=(node, kwargs.get("silent", True), items))
+            t = threading.Thread(target=self._ssh_parallel_target, args=(node, kwargs.get("silent", True), items))
             threads.append(t)
             t.start()
         # wait for all threads to complete

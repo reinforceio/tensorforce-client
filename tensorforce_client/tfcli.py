@@ -26,7 +26,6 @@ import tensorforce_client.utils as util
 import tensorforce_client.commands as commands
 
 
-
 def main():
     parser = argparse.ArgumentParser(prog="tfcli", usage="%(prog)s")
     subparsers = parser.add_subparsers(dest="command", help="command help")
@@ -137,7 +136,7 @@ def main():
         # sets up a new experiment (only local for now (until experiment is started))
     else:
         # look for our base parent project directory (we may be in some sub dir) and set the cwd to that parent dir
-        if not util.set_project_dir():
+        if util.set_project_dir() is False:
             print("ERROR: No tensorforce-client project directory found in any parent dir of the "
                              "current one ({})! Please make sure you are in some project directory. Create a new "
                              "project with `tfcli init`.".format(os.getcwd()))

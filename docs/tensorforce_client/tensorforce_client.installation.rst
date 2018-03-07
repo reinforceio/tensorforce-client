@@ -4,8 +4,8 @@ Installation
 In the following, we will be walking through the requirements to get you setup with tensorforce-client
 and how to satisfy or install each one of them.
 
-Your Google Account
--------------------
+Your Google Account (Including Service Account)
+-----------------------------------------------
 
 Create a new google account or use an existing one.
 Then go to http://console.cloud.google.com and create a new cloud project:
@@ -54,6 +54,46 @@ already be enabled by default):
     :alt: Enabling the Kubernetes Engine API.
 
     Enabling the Kubernetes Engine API.
+
+
+The last thing, we need to do with our google account is to add a so called "service account" to our project.
+This is so that we register our local glcoud app (see below) with our account and give permissions to it to
+create clusters and run experiments.
+
+Go to the main menu -> "IAM & admin" -> "Service accounts":
+
+.. figure:: ../images/go_to_service_accounts.png
+    :alt: Go to Service Accounts
+
+    How to get to "Service Accounts"
+
+... and click on:
+
+.. figure:: ../images/create_service_account.png
+    :alt: Create a new service account.
+
+Fill out the upcoming form like this (important to ask google to create a new private key for you, unless
+you would like to use an existing one):
+
+.. figure:: ../images/create_service_account_form.png
+    :alt: Fill out the details for your new service account.
+
+    Fill out the details for your new service account.
+
+... then click on "create" and store the upcoming json private key file somewhere on your local drive.
+Select the new service account in the list of accounts showing in your browser now and then click on "+Permissions"
+above.
+Then enter the name of the new service account ("test-account" in our example), and add the "Service Account User"
+permission to it:
+
+.. figure:: ../images/adding_service_account_permission.png
+    :alt: Add Service Account Permission.
+
+When you `init` a new tensorforce-client project, you will be asked for the name of this new service account
+as well as for the location of the private key file on your local drive.
+
+Congratulations! Your google account is now all set up to run cloud experiments with tensorforce-client.
+Time to install the remaining few pieces of software on our local machine.
 
 
 Get the Google Cloud SDK (all platforms)
@@ -145,17 +185,18 @@ running setup.py:
     $ python setup.py
 
 
-Set an alias
-------------
+Setting an alias
+----------------
 
-Tensorforce-Client is a python module that should be run using:
+Tensorforce-client is a python module that should be run using:
 
 .. code:: bash
 
-    $ python -m tensorforce_client [some command(s)]
+    $ tfcli [some command(s)] [some options]?
 
-You can set an alias (e.g. `tfcli`) in your current session
-for this as follows:
+`tfcli` is a short for `python -m tensorforce_client`.
+Should the alias `tfcli` - for some reason - not work on the command line in your shell,
+you can set the alias manually for your current session as follows:
 
 - Windows:
 

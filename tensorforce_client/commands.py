@@ -38,12 +38,14 @@ def cmd_init(args):
 
     print("+ Creating project paths and copying sample spec files.")
     # add sub-dirs to it and write the main project file
-    os.makedirs("clusters", exist_ok=True)
-    os.makedirs("experiments", exist_ok=True)
+    if not os.path.isdir("clusters"):
+        os.makedirs("clusters")
+    if not os.path.isdir("experiments"):
+        os.makedirs("experiments")
 
     # copy all json example spec files from cloned github repo
     import tensorforce_client
-    p = tensorforce_client.__path__._path[0] + "/configs"
+    p = tensorforce_client.__path__[0] + "/configs"
     shutil.rmtree("configs/", ignore_errors=True)
     shutil.copytree("{}".format(p), "configs/")
     # add the experiment jinja file (k8s yaml template) into project's config dir
@@ -51,14 +53,19 @@ def cmd_init(args):
 
     print("+ Checking requirements (gcloud and kubectl installations).")
     # check for installations of gcloud, then kubectl
-    try:
-        syscall("gcloud --version")
-    except OSError:
-        raise util.TFCliError("INIT ERROR: Installation of gcloud command line tool required.\nPlease install first:"
-                              " https://cloud.google.com/sdk/docs/quickstarts")
+    out = syscall("gcloud --version", return_outputs="as_str", merge_err=True)
+    if re.match(r'not recognized as an internal', out):
+        print("INIT ERROR: Installation of gcloud command line tool required.\nPlease install first:"
+              " https://cloud.google.com/sdk/docs/quickstarts")
+        quit()
+
     # we can install kubectl via gcloud: `gcloud components install kubectl`
     try:
-        syscall("kubectl version")
+        out = syscall("kubectl version", return_outputs="as_str", merge_err=True)
+        if re.match(r'not recognized as an internal', out):
+            print("++ Installing missing kubectl command line tool (this is necessary to manage your clusters via the"
+                  " Kubernetes tool):")
+            syscall("gcloud components install kubectl")
     except OSError:
         print("++ Installing missing kubectl command line tool (this is necessary to manage your clusters via the"
               " Kubernetes tool):")
@@ -66,24 +73,37 @@ def cmd_init(args):
 
     # login to google cloud
     print("+ Logging you into google cloud account.")
-    # gcloud auth  [ACCOUNT] --key-file=KEY_FILE
-    # TODO: have user enter this information (account and private key file)
-    syscall("gcloud auth activate-service-account kubernetes-account@introkubernetes-191608.iam.gserviceaccount.com "
-            "--key-file=l:/programming/privatekeys/MaRLEnE-bbad55cddab1.json")
+    while True:
+        print("Please enter your remote project's google cloud service account (full email address) here:")
+        service_account = input(">")
+        if not re.match(r'^[\w\-\.]+\@[\w\-\.]+\.[a-z]+', service_account):
+            print("ERROR: The service account needs to be an email address.")
+        else:
+            break
+    while True:
+        print("Please enter the location of your private key file associated with this service account:")
+        key_file = input(">")
+        if not os.path.isfile(key_file):
+            print("ERROR: The key_file you entered does not exist or is not a file.")
+        else:
+            break
+    # kubernetes-account@introkubernetes-191608.iam.gserviceaccount.com
+    # l:/programming/privatekeys/MaRLEnE-bbad55cddab1.json
+    syscall("gcloud auth activate-service-account {} --key-file={}".format(service_account, key_file))
 
     remote_projects_by_name, remote_projects_by_id = util.get_remote_projects()
     # if remote given -> only check for that one and exit if doesn't exist
     if args.remote_project_id:
         print("+ Checking for existing remote-project ID ({}).".format(args.remote_project_id))
         if args.remote_project_id not in remote_projects_by_id:
-            raise util.TFCliError("ERROR: No remote project ID {} found in cloud!".format(args.remote_project_id))
+            print("ERROR: No remote project ID {} found in cloud!".format(args.remote_project_id))
+            quit()
         print("+ Found remote project ID {}.".format(args.remote_project_id))
         remote_project_id = args.remote_project_id
         remote_project_name = remote_projects_by_id[args.remote_project_id]["project-name"]
         # if no name -> take remote's name
         if not args.name:
             args.name = remote_project_name
-
     # look for existing project in cloud with same name and ask whether to use that one. If not, user can specify
     # a remote project name that may differ from the local project folder's name
     else:

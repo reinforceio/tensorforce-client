@@ -40,7 +40,8 @@ view and debug your RL models and experiments in the browser.
 - A google cloud platform account (any google account will do) with
 billing enabled and certain "google cloud APIs" activated.
 - The Google Cloud SDK.
-- Local installation of Python3.5 or higher.
+- Local installation of Python2.7 if on Linux and Python3.5 (or higher)
+if on Windows.
 - The tensorforce-client python module (pip-installable).
 
 
@@ -54,19 +55,19 @@ for certain commands and subcommands, simply use the `--help` flag
 like so:
 
 ```
-$ python -m tensorforce_client --help
+$ tfcli --help
 ```
 
 Or, more specifically:
 
 ```
-$ python -m tensorforce_client cluster --help
+$ tfcli cluster --help
 ```
 
 Or:
 
 ```
-$ python -m tensorforce_client experiment new --help
+$ tfcli experiment new --help
 ```
 
 
@@ -78,7 +79,7 @@ First, create a tensorforce project on your local machine:
 # Create, then cd into a directory of your choice in which you would
 # like to start a new project.
 
-$ python -m tensorforce_client init -r [some remote gcloud project ID e.g. TensorForce-Client]
+$ tfcli init -r [some remote gcloud project ID e.g. TensorForce-Client]
 
 # This will link your already existing cloud project with the current working dir on your local machine.
 # Your project is now initialized.
@@ -93,7 +94,7 @@ Then, start a small cluster in the cloud by using one of the already
 provided json cluster config files:
 
 ```
-$ python -m tensorforce_client cluster create -f small_cluster.json -n my-new-cluster
+$ tfcli cluster create -f small_cluster.json -n my-new-cluster
 ```
 
 This will bring up a new Kubernetes cluster in the cloud, which may take
@@ -103,7 +104,7 @@ first experiment:
 #### Creating and starting an experiment
 
 ```
-$ python -m tensorforce_client experiment new -f simple_a3c -c my-new-cluster -n my-new-experiment --start
+$ tfcli experiment new -f simple_a3c -c my-new-cluster -n my-new-experiment --start
 ```
 
 This creates and right away starts (`--start` option) a new experiment using the

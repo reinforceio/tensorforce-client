@@ -243,8 +243,13 @@ def syscall(command, return_outputs=False, merge_err=True):
         on the value of return_outputs.
     """
     if return_outputs:
-        out = sp.Popen("{}{}".format("cmd /c " if os.name == 'nt' else "", command),
-                       stdout=sp.PIPE, stderr=sp.STDOUT if merge_err else sp.PIPE)
+        if os.name == "nt":
+            out = sp.Popen("cmd /c {}".format(command),
+                           stdout=sp.PIPE, stderr=sp.STDOUT if merge_err else sp.PIPE)
+        else:
+            out = sp.Popen(shlex.split(command),
+                           stdout=sp.PIPE, stderr=sp.STDOUT if merge_err else sp.PIPE)
+
         if merge_err:
             return out.stdout if return_outputs is True else out.stdout.raw.readall().decode("latin-1")
         else:
