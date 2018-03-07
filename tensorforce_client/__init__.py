@@ -18,5 +18,5 @@ TensorForce client for executing parallelized RL-jobs in the cloud
 using the Kubernetes ecosystem and a cloud computing provider (only google cloud supported so far)
 """
 
-__version__ = "0.1.0a4"
+__version__ = "0.1.0a5"
 
