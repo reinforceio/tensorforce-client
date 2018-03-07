@@ -36,7 +36,7 @@ setup(
         ]
     },
     download_url='https://github.com/reinforceio/tensorforce-client/archive/{}.tar.gz'.format(version),
-    install_requires=["jinja2"],
+    install_requires=["jinja2", "six"],
     #setup_requires=[],
     extras_require={
         "tf": ["tensorflow>=1.4.0"]  # if tensorboard needed to look at summaries locally

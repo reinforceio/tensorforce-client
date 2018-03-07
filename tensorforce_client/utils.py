@@ -246,15 +246,20 @@ def syscall(command, return_outputs=False, merge_err=True):
         if os.name == "nt":
             out = sp.Popen("cmd /c {}".format(command),
                            stdout=sp.PIPE, stderr=sp.STDOUT if merge_err else sp.PIPE)
+            if merge_err:
+                return out.stdout if return_outputs is True else out.stdout.raw.readall().decode("latin-1")
+            else:
+                return (out.stdout, out.stderr) if return_outputs is True \
+                    else (out.stdout.raw.readall().decode("latin-1"), out.stderr.raw.readall().decode("latin-1"))
         else:
             out = sp.Popen(shlex.split(command),
                            stdout=sp.PIPE, stderr=sp.STDOUT if merge_err else sp.PIPE)
 
-        if merge_err:
-            return out.stdout if return_outputs is True else out.stdout.raw.readall().decode("latin-1")
-        else:
-            return (out.stdout, out.stderr) if return_outputs is True \
-                else (out.stdout.raw.readall().decode("latin-1"), out.stderr.raw.readall().decode("latin-1"))
+            if merge_err:
+                return out.stdout if return_outputs is True else out.stdout.read().decode("latin-1")
+            else:
+                return (out.stdout, out.stderr) if return_outputs is True \
+                    else (out.stdout.read().decode("latin-1"), out.stderr.read().decode("latin-1"))
 
     args = ["cmd", "/c"] if os.name == 'nt' else []
     args.extend(shlex.split(command))

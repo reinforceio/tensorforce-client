@@ -20,8 +20,8 @@ from tensorforce_client.cluster import Cluster, get_cluster_from_string
 import os
 import re
 import shutil
-import json
 import time
+from six.moves import input
 
 
 def cmd_init(args):
@@ -53,7 +53,11 @@ def cmd_init(args):
 
     print("+ Checking requirements (gcloud and kubectl installations).")
     # check for installations of gcloud, then kubectl
-    out = syscall("gcloud --version", return_outputs="as_str", merge_err=True)
+    try:
+        out = syscall("gcloud --version", return_outputs="as_str", merge_err=True)
+    # Linux: fake Win command not found error
+    except OSError:
+        out = "not recognized as an internal"
     if re.match(r'not recognized as an internal', out):
         print("INIT ERROR: Installation of gcloud command line tool required.\nPlease install first:"
               " https://cloud.google.com/sdk/docs/quickstarts")
@@ -62,11 +66,11 @@ def cmd_init(args):
     # we can install kubectl via gcloud: `gcloud components install kubectl`
     try:
         out = syscall("kubectl version", return_outputs="as_str", merge_err=True)
-        if re.match(r'not recognized as an internal', out):
-            print("++ Installing missing kubectl command line tool (this is necessary to manage your clusters via the"
-                  " Kubernetes tool):")
-            syscall("gcloud components install kubectl")
+    # Linux: fake Win command not found error
     except OSError:
+        out = "not recognized as an internal"
+
+    if re.match(r'not recognized as an internal', out):
         print("++ Installing missing kubectl command line tool (this is necessary to manage your clusters via the"
               " Kubernetes tool):")
         syscall("gcloud components install kubectl")
